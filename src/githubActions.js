@@ -22,6 +22,10 @@ class GithubActions {
   setFailed(message) {
     core.setFailed(message)
   }
+
+  maskOutput(message) {
+    core.setSecret(message)
+  }
 }
 
 class LogActions {

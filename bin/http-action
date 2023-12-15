@@ -25,7 +25,7 @@ if (!!argv.customHeaders) {
         console.error('Could not parse customHeaders string value')
     }
 }
-    
+
 const headers = { 'Content-Type': argv.contentType || 'application/json' }
 
 if (!!argv.bearerToken) {
@@ -38,7 +38,7 @@ const instanceConfig = {
     headers: { ...headers, ...customHeaders }
 }
 
-request({ 
+request({
     data: argv.data,
     method: argv.method,
     instanceConfig,

@@ -32,7 +32,7 @@ const instanceConfig = {
 }
 
 if (!!core.getInput('httpsCA') || !!core.getInput('httpsCert')) {
-  instanceConfig.httpsAgent = new https.Agent({ 
+  instanceConfig.httpsAgent = new https.Agent({
     ca: core.getInput('httpsCA') || undefined,
     cert: core.getInput('httpsCert') || undefined,
     key: core.getInput('httpsKey') || undefined
@@ -65,6 +65,7 @@ const responseFile = core.getInput('responseFile')
 const method = core.getInput('method') || METHOD_POST;
 const preventFailureOnNoResponse = core.getInput('preventFailureOnNoResponse') === 'true';
 const escapeData = core.getInput('escapeData') === 'true';
+const maskOutput = core.getInput('maskOutput') === 'true';
 
 const ignoreStatusCodes = core.getInput('ignoreStatusCodes');
 let ignoredCodes = [];
@@ -85,7 +86,8 @@ const options = {
   preventFailureOnNoResponse,
   escapeData,
   retry,
-  retryWait
+  retryWait,
+  maskOutput
 }
 
 request({ data, method, instanceConfig, files, file, actions, options }).then(response => {

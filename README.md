@@ -47,6 +47,7 @@ jobs:
 |responseFile| Persist the response data to the specified file path ||
 |retry| optional amount of retries if the request is failing, does not retry if the status code is ignored ||
 |retryWait| time between each retry in millseconds | 3000 |
+|maskOutput| Prevent this Action from storing the response in plain text. Use 'true' (string) as value to enable it ||
 
 ### Response
 
@@ -84,7 +85,7 @@ To [enable debug logging in GitHub Actions](https://docs.github.com/en/actions/m
 * You can execute this tool locally with the provided CLI `bin/http-action`.
 
 ```bash
-bin/http-action --help                   
+bin/http-action --help
 Positionals:
   url  request URL                                                     [string]
 

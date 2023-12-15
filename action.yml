@@ -65,6 +65,9 @@ inputs:
     retryWait:
         description: 'wait time between retries in milliseconds'
         required: false
+    maskOutput:
+        description: 'Prevent this Action from storing the response in plain text'
+        required: false
 outputs:
     response:
         description: 'HTTP Response Content'

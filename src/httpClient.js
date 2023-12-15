@@ -21,25 +21,26 @@ const CONTENT_TYPE_URLENCODED = 'application/x-www-form-urlencoded'
  * @param {string} param0.data Request Body as string, default {}
  * @param {string} param0.files Map of Request Files (name: absolute path) as JSON String, default: {}
  * @param {string} param0.file Single request file (absolute path)
- * @param {GithubActions} param0.actions 
- * @param {{ 
+ * @param {GithubActions} param0.actions
+ * @param {{
  *  ignoredCodes: number[];
  *  preventFailureOnNoResponse: boolean,
  *  escapeData: boolean;
  *  retry: number;
  *  retryWait: number;
+ *  maskOutput: boolean;
  * }} param0.options
  *
  * @returns {Promise<axios.AxiosResponse>}
  */
 const request = async({ method, instanceConfig, data, files, file, actions, options }) => {
   actions.debug(`options: ${JSON.stringify(options)}`)
-  
+
   try {
     if (options.escapeData) {
-      data = data.replace(/"[^"]*"/g, (match) => { 
+      data = data.replace(/"[^"]*"/g, (match) => {
         return match.replace(/[\n\r]\s*/g, "\\n");
-      }); 
+      });
     }
 
     if (method === METHOD_GET) {
@@ -82,7 +83,7 @@ const request = async({ method, instanceConfig, data, files, file, actions, opti
     }
 
     actions.debug('Instance Configuration: ' + JSON.stringify(instanceConfig))
-    
+
     /** @type {axios.AxiosInstance} */
     const instance = axios.create(instanceConfig);
 
@@ -94,10 +95,10 @@ const request = async({ method, instanceConfig, data, files, file, actions, opti
       } catch(error) {
         if (error.response && options.ignoredCodes.includes(error.response.status)) {
           actions.warning(`ignored status code: ${JSON.stringify({ code: error.response.status, message: error.response.data })}`)
-          
+
           return null
         }
-        
+
         if (!error.response && error.request && options.preventFailureOnNoResponse) {
           actions.warning(`no response received: ${JSON.stringify(error)}`);
 
@@ -119,7 +120,12 @@ const request = async({ method, instanceConfig, data, files, file, actions, opti
       return null
     }
 
-    actions.setOutput('response', JSON.stringify(response.data))
+    let responseData = JSON.stringify(response.data)
+    if (options.maskOutput) {
+      actions.setSecret(responseData)
+      actions.debug('Response has been masked')
+    }
+    actions.setOutput('response', responseData)
     actions.setOutput('headers', response.headers)
 
     return response
@@ -153,10 +159,10 @@ const updateConfig = async (instanceConfig, formData, actions) => {
 
     delete formHeaders['content-type']
 
-    return { 
-      ...instanceConfig, 
-      headers: { 
-        ...instanceConfig.headers, 
+    return {
+      ...instanceConfig,
+      headers: {
+        ...instanceConfig.headers,
         ...formHeaders,
         'Content-Length': await contentLength(formData),
         'Content-Type': contentType
